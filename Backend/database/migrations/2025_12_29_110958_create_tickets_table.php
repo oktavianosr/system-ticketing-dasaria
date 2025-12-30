@@ -12,12 +12,13 @@ return new class extends Migration {
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->string('title');
             $table->text('description');
             $table->enum('priority', ['low', 'medium', 'high'])->default('low');
             $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
             $table->foreignId('created_by')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreignId('assigned_to')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreignId('assigned_to')->nullable();
             $table->integer('updated_by')->references('id')->on('users')->cascadeOnDelete()->nullable();
             $table->timestamps();
             $table->softDeletes()->nullable();
