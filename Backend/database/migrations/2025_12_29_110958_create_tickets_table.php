@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->foreignId('assigned_to')->nullable();
             $table->integer('updated_by')->references('id')->on('users')->cascadeOnDelete()->nullable();
             $table->timestamps();
+            $table->timestamp('completed_at')->nullable();
             $table->softDeletes()->nullable();
         });
     }

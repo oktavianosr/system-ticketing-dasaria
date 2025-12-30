@@ -38,7 +38,7 @@ class TicketObserver
 
             TicketHistories::create([
                 'ticket_id' => $ticket->id,
-                'changed_by' => $ticket->updated_by,
+                'changed_by' => $ticket->created_by,
                 'field_changed' => $field,
                 'old_value' => $oldValue,
                 'new_value' => $newValue,

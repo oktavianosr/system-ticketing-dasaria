@@ -22,7 +22,7 @@ class TicketResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'priority' => $this->priority,
-            'assigned_to' => new UserResources($this->assigned_to),
+            'assigned_to' => new UserResources($this->assignedToUser),
             'status' => $this->status,
             'category' => $this->category,
             'created_at' => $this->created_at,

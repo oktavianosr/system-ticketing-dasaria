@@ -59,5 +59,24 @@ class TicketRepository
     {
         return $this->ticket->with('comments')->findOrFail($id);
     }
+    public function getAllComment($id)
+    {
+        return $this->ticket->with('comments')->findOrFail($id);
+    }
 
+    public function addComment($ticket, $data)
+    {
+        return $ticket->comments()->create($data);
+    }
+
+
+    public function updateTicketStatus($ticket, $status)
+    {
+        $ticket->status = $status;
+        if ($status == 'resolved') {
+            $ticket->completed_at = now();
+        }
+        $ticket->save();
+        return $ticket;
+    }
 }

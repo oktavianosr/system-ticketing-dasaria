@@ -30,7 +30,7 @@ class TicketFactory extends Factory
             'priority' => $this->faker->randomElement($priorities),
             'status' => $this->faker->randomElement($statuses),
             'created_by' => $this->faker->randomElement($userIds),
-            'assigned_to' => $this->faker->randomElement($userIds),
+            'assigned_to' => $this->faker->optional(0.7)->randomElement($userIds),
             'updated_by' => $this->faker->optional(0.7)->randomElement($userIds),
             'created_at' => $createdAt = $this->faker->dateTimeBetween('-3 months', 'now'),
             'updated_at' => $this->faker->dateTimeBetween($createdAt, 'now'),
