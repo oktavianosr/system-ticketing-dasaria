@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
             $table->foreignId('changed_by')->references('id')->on('users')->onDelete('cascade');
+            $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
             $table->string('field_changed');
             $table->text('old_value')->nullable();
             $table->text('new_value')->nullable();

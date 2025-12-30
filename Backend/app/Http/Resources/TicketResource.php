@@ -27,6 +27,14 @@ class TicketResource extends JsonResource
             'category' => $this->category,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'comments' => $this->whenLoaded('comments', function () {
+                return CommentResource::collection($this->comments);
+            }),
+
+            'comments_count' => $this->whenLoaded('comments', function () {
+                return $this->comments->count();
+            }),
+
         ];
     }
 }

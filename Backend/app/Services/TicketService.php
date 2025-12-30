@@ -20,8 +20,8 @@ class TicketService
         return $this->ticketRepository->getAllTickets($params, $user);
     }
 
-    public function getTicketById($id, $fields)
+    public function getTicketById($id)
     {
-        return $this->ticketRepository->getTicketById($id, $fields);
+        return $this->ticketRepository->getTicketById($id);
     }
 }

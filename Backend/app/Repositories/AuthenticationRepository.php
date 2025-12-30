@@ -9,33 +9,20 @@ use App\Models\User;
 
 class AuthenticationRepository
 {
+    protected $user;
+
     public function __construct(User $user)
     {
         $this->user = $user;
     }
 
-    public function login($data)
+    public function findByEmail(string $email)
     {
-        $credentials = [
-            'email' => $data["email"],
-            'password' => $data["password"],
-        ];
+        return $this->user->where('email', $email)->first();
+    }
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json([
-                "message" => "The provided credentials do not match our records.",
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        request()->session()->regenerate();
-
-        $user = Auth::user();
-
-        return response()->json([
-            "message" => "login successful",
-            "user" => new UserResource($user->load('role')),
-        ], Response::HTTP_OK);
-
-
+    public function deleteCurrentToken(User $user)
+    {
+        return $user->currentAccessToken()->delete();
     }
 }

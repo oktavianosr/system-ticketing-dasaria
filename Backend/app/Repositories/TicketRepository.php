@@ -55,8 +55,9 @@ class TicketRepository
         return $query->paginate($pagination);
     }
 
-    public function getTicketById($id, $fields = ['*'])
+    public function getTicketById($id)
     {
-        return $this->ticket->select($fields)->with('comments')->find($id);
+        return $this->ticket->with('comments')->findOrFail($id);
     }
+
 }

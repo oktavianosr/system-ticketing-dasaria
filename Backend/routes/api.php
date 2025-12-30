@@ -9,10 +9,14 @@ use App\Http\Controllers\AuthenticationController;
 Route::post("login", [AuthenticationController::class, "login"]);
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Authentication
     Route::post("logout", [AuthenticationController::class, "logout"]);
     Route::get("me", [AuthenticationController::class, "me"]);
 
-
+    // Ticket
     Route::get("tickets", [TicketController::class, "index"]);
-    Route::post("/store/ticket", [TicketController::class, "store"]);
+    Route::post("ticket/store", [TicketController::class, "store"]);
+    Route::get("tickets/{id}", [TicketController::class, "show"]);
+    Route::put("tickets/{id}", [TicketController::class, "update"]);
+
 });

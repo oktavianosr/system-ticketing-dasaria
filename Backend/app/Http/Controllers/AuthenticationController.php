@@ -7,33 +7,43 @@ use App\Http\Requests;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\UserResources;
+use App\Services\AuthenticationService;
 
 class AuthenticationController extends Controller
 {
+    protected $authenticationService;
+
+    public function __construct(AuthenticationService $authenticationService)
+    {
+        $this->authenticationService = $authenticationService;
+    }
+
     public function login(Request $request)
     {
         try {
-            if (!Auth::guard('web')->attempt($request->only('email', 'password'))) {
+            $result = $this->authenticationService->login($request->only('email', 'password'));
+
+            if (!$result) {
                 return response()->json([
+                    "success" => false,
                     "message" => "The provided credentials do not match our records.",
                     "data" => null,
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
-            $user = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
-
             return response()->json([
+                "success" => true,
                 'message' => 'Login Succesful',
                 'data' => [
-                    'token' => $token,
-                    'user' => new UserResources($user),
+                    'token' => $result['token'],
+                    'user' => new UserResources($result['user']),
                 ]
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Something went wrong',
-                'data' => null,
+                "success" => false,
+                "message" => "Something went wrong",
+                "data" => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -41,15 +51,16 @@ class AuthenticationController extends Controller
     public function logout(Request $request)
     {
         try {
-            $user = Auth::user();
-            $user->currentAccessToken()->delete();
+            $this->authenticationService->logout(Auth::user());
 
             return response()->json([
+                "success" => true,
                 'message' => 'Logout Successful',
                 'data' => null,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
+                "success" => false,
                 'message' => 'Something went wrong',
                 'data' => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -59,16 +70,17 @@ class AuthenticationController extends Controller
     public function me(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = $this->authenticationService->me();
 
             return response()->json([
+                "success" => true,
                 'message' => 'User fetched successfully',
                 'data' => new UserResources($user),
             ], Response::HTTP_OK);
 
-
         } catch (\Exception $e) {
             return response()->json([
+                "success" => false,
                 'message' => 'Something went wrong',
                 'data' => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
