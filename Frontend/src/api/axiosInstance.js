@@ -36,4 +36,30 @@ axiosInstance.interceptors.response.use(
     }
 );
 
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const customError = {
+            message: 'Terjadi kesalahan sistem',
+            errors: null,
+            status: error.response?.status
+        };
+
+        if (error.response) {
+            const data = error.response.data;
+
+            customError.message = data.message || customError.message;
+            if (data.errors) {
+                customError.errors = data.errors;
+                const firstErrorField = Object.keys(data.errors)[0];
+                customError.message = data.errors[firstErrorField][0];
+            }
+        } else if (error.request) {
+            customError.message = 'Koneksi ke server terputus';
+        }
+
+        return Promise.reject(customError);
+    }
+);
+
 export default axiosInstance;

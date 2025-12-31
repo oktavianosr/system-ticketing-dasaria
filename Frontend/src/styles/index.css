@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Pastikan animasi ini ada jika kamu menggunakan animate-fade-in */
 @keyframes fadeIn {
     from {
         opacity: 0;

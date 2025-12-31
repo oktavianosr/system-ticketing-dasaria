@@ -8,6 +8,8 @@ import Pagination from '../components/shared/Pagination';
 import { useUIContext } from '../context/UIContext';
 import { ticketService } from '../api/services/ticketService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
 
 const statusOptions = [
     { value: '', label: 'All Statuses' },
@@ -34,6 +36,10 @@ const TicketListPage = () => {
     const [priorityFilter, setPriorityFilter] = useState('');
     const { showAlert } = useUIContext();
     const navigate = useNavigate();
+    const { user } = useAuth();
+
+    const canCreateTicket = user?.role !== 'agent';
+
 
     const fetchTickets = useCallback(async (params = {}) => {
         setLoading(true);
@@ -105,16 +111,18 @@ const TicketListPage = () => {
                             Manage and track your support tickets here
                         </p>
                     </div>
-                    <div className="mt-4 md:mt-0">
-                        <Button variant="primary" size="md" onClick={handleCreateTicket}>
-                            <span className="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                </svg>
-                                New Ticket
-                            </span>
-                        </Button>
-                    </div>
+                    {canCreateTicket && (
+                        <div className="mt-4 md:mt-0">
+                            <Button variant="primary" size="md" onClick={handleCreateTicket}>
+                                <span className="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                                    </svg>
+                                    New Ticket
+                                </span>
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Filters & Search */}

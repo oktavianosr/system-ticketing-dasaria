@@ -3,17 +3,18 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import InputField from '../components/shared/InputField';
 import Button from '../components/shared/Button';
-import Loading from '../components/shared/LoadingSpinner';
 import { useUIContext } from '../context/UIContext';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 const LoginPage = () => {
-    const { login, isLoading } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
     const { showAlert } = useUIContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [formError, setFormError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const validateForm = () => {
         const newErrors = {};
@@ -36,12 +37,14 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
 
+        setIsLoading(true);
         setErrors({});
         setFormError('');
 
@@ -49,21 +52,26 @@ const LoginPage = () => {
             const data = await login(email, password);
             if (data) {
                 showAlert(data.message, 'success');
-                setTimeout(() => {
-                    navigate('/tickets');
-                }, 1500);
+                navigate('/tickets');
             }
         } catch (error) {
-            showAlert(error.message || 'Login gagal. Cek kembali email dan password Anda.');
+            showAlert(error.message || 'Login gagal. Cek kembali email dan password Anda.', 'error');
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     if (isLoading) {
-        return <Loading fullScreen />;
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 flex items-center justify-center p-4 border">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 flex items-center justify-center p-4 border" style={{ backgroundImage: 'url("https://wallpaperaccess.com/full/656665.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="w-full max-w-md ">
                 {/* Header */}
                 <div className="text-center mb-10">
@@ -130,28 +138,13 @@ const LoginPage = () => {
                                 </div>
                             </div>
                         )}
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                                    Remember me
-                                </label>
-                            </div>
-
-                        </div>
-
                         <Button
                             type="submit"
                             variant="primary"
                             fullWidth
                             size="lg"
                             className="mt-2"
+                            isLoading={isLoading}
                         >
                             Sign In
                         </Button>

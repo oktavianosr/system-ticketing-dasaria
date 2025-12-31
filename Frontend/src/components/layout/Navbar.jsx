@@ -7,6 +7,17 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+
+    // setIsLoading(true);
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     const navLinks = [
         { path: '/tickets', label: 'Tickets' },
@@ -38,8 +49,8 @@ const Navbar = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${isActive(link.path)
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                     }`}
                             >
                                 {link.label}
@@ -60,7 +71,7 @@ const Navbar = () => {
                                         <p className="text-gray-500 text-xs capitalize">{user.role}</p>
                                     </div>
                                 </div>
-                                <Button variant="outline" size="sm" onClick={logout}>
+                                <Button variant="outline" size="sm" isLoading={isLoading} onClick={logout}>
                                     Logout
                                 </Button>
                             </>
@@ -97,8 +108,8 @@ const Navbar = () => {
                                 to={link.path}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-2 rounded-md text-base font-medium ${isActive(link.path)
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 {link.label}
@@ -116,7 +127,7 @@ const Navbar = () => {
                                     <p className="text-gray-500 text-sm capitalize">{user.role}</p>
                                 </div>
                             </div>
-                            <Button variant="outline" fullWidth onClick={logout}>
+                            <Button variant="outline" fullWidth isLoading={isLoading} onClick={logout} >
                                 Logout
                             </Button>
                         </div>

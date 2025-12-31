@@ -8,7 +8,8 @@ const InputField = ({
     error,
     placeholder,
     fullWidth = false,
-    className = ''
+    className = '',
+    ...props
 }) => {
     return (
         <div className={`${fullWidth ? 'w-full' : ''} ${className}`}>
@@ -31,6 +32,7 @@ const InputField = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
+                {...props}
             />
             {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
         </div>

@@ -44,7 +44,7 @@ const TicketDetailPage = () => {
             const response = await userService.getAgents();
             setAgents(response.data || response || []);
         } catch (error) {
-            console.error('Failed to fetch agents', error);
+            showAlert(error.message || 'Failed to load agents', 'error');
         }
     }, [isAdminOrAgent]);
 

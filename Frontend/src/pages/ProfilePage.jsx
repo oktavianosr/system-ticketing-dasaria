@@ -9,7 +9,7 @@ const ProfilePage = () => {
 
     if (loading) {
         return (
-            <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+            <div className="bg-gray-500 min-h-screen flex items-center justify-center">
                 <LoadingSpinner />
             </div>
         );

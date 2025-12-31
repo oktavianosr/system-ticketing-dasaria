@@ -2,7 +2,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import InputField from '../shared/InputField';
 
-const FormInput = ({ name, label, type = 'text', validation, ...props }) => {
+const FormInput = ({ name, label, type = 'text', ...props }) => {
     const {
         register,
         formState: { errors }
@@ -16,7 +16,7 @@ const FormInput = ({ name, label, type = 'text', validation, ...props }) => {
             label={label}
             type={type}
             error={error?.message}
-            {...register(name, validation)}
+            {...register(name)}
             {...props}
         />
     );

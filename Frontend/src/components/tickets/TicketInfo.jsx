@@ -74,9 +74,9 @@ const TicketInfo = ({ ticket, agents = [], onStatusUpdate, onAssigneeUpdate, upd
                     <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Requester</h4>
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
-                            {getInitials(ticket.creator?.name)}
+                            {getInitials(ticket.user?.name)}
                         </div>
-                        <span className="text-sm text-gray-900">{ticket.creator?.name || 'Unknown'}</span>
+                        <span className="text-sm text-gray-900">{ticket.user?.name || 'Unknown'}</span>
                     </div>
                 </div>
                 {/* Assignee Section */}

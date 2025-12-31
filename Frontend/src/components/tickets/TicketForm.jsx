@@ -34,7 +34,7 @@ const TicketForm = ({ onSubmit, initialData = {}, isSubmitting = false }) => {
                 <div>
                     <FormInput
                         name="title"
-                        label="Subject"
+                        label="Title"
                         placeholder="Brief summary of the issue"
                         fullWidth
                     />
