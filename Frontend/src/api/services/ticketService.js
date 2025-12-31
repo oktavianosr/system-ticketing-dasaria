@@ -28,5 +28,9 @@ export const ticketService = {
     getComments: async (ticketId) => {
         const response = await axiosInstance.get(`/tickets/${ticketId}/comments`);
         return response.data;
+    },
+    assignTicket: async (ticketId, agentId) => {
+        const response = await axiosInstance.post(`/tickets/${ticketId}/assign`, { assigned_to: agentId });
+        return response.data;
     }
 };

@@ -5,9 +5,10 @@ import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import TicketListPage from './pages/TicketListPage';
+import TicketCreatePage from './pages/TicketCreatePage';
 import TicketDetailPage from './pages/TicketDetailPage';
 import ProfilePage from './pages/ProfilePage';
-import './App.css';
+import './styles/index.css';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Navigate to="/tickets" replace />} />
                 <Route path="/tickets" element={<TicketListPage />} />
+                <Route path="/ticket/create" element={<TicketCreatePage />} />
                 <Route path="/tickets/:id" element={<TicketDetailPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>

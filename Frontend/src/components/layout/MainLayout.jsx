@@ -1,16 +1,17 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import { useUIContext } from '../../context/UIContext';
+import AlertToast from '../shared/AlertToast';
 
 const MainLayout = () => {
-    const { sidebarOpen } = useUIContext();
     return (
-        <div className={`app-layout ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <div className="min-h-screen bg-gray-50">
             <Navbar />
-            <main className="main-content">
+            <main>
                 <Outlet />
             </main>
+            <AlertToast />
         </div>
     );
 };
+
 export default MainLayout;
