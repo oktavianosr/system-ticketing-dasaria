@@ -79,26 +79,31 @@ const TicketInfo = ({ ticket, agents = [], onStatusUpdate, onAssigneeUpdate, upd
                         <span className="text-sm text-gray-900">{ticket.creator?.name || 'Unknown'}</span>
                     </div>
                 </div>
-
-                {/* Assignee */}
+                {/* Assignee Section */}
                 <div>
                     <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Assigned To</h4>
                     {onAssigneeUpdate && agents.length > 0 ? (
                         <FilterDropdown
-                            value={ticket.assigned_to?.toString() || ''}
+                            // Ambil ID-nya saja untuk value dropdown
+                            value={ticket.assigned_id?.toString() || ticket.assigned_to?.id?.toString() || ''}
                             options={agentOptions}
                             onChange={onAssigneeUpdate}
                             disabled={assigningAgent}
                         />
-                    ) : ticket.assignee ? (
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
-                                {getInitials(ticket.assignee?.name)}
-                            </div>
-                            <span className="text-sm text-gray-900">{ticket.assignee?.name}</span>
-                        </div>
                     ) : (
-                        <span className="text-sm text-gray-400">Unassigned</span>
+                        // Tampilan untuk Customer (yang tidak bisa update)
+                        <div className="flex items-center gap-2">
+                            {ticket.assigned_to ? (
+                                <>
+                                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
+                                        {getInitials(ticket.assigned_to?.name)}
+                                    </div>
+                                    <span className="text-sm text-gray-900">{ticket.assigned_to?.name}</span>
+                                </>
+                            ) : (
+                                <span className="text-sm text-gray-400">Unassigned</span>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Skeleton = ({ className = '', count = 1, height = '', width = '100%' }) => {
+const Skeleton = ({ className = '', count = 1, height = '10px', width = '100%' }) => {
     return (
         <div className="space-y-2">
             {[...Array(count)].map((_, i) => (

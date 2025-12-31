@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from '../shared/InputField';
 import Button from '../shared/Button';
 import { userService } from '../../api/services/userService';
@@ -7,10 +7,19 @@ import { useUIContext } from '../../context/UIContext';
 const ProfileForm = ({ user, onUpdate }) => {
     const { showAlert } = useUIContext();
     const [formData, setFormData] = useState({
-        name: user?.name || '',
-        phone: user?.phone || ''
+        name: '',
+        phone: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                name: user.name,
+                phone: user.phone
+            });
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

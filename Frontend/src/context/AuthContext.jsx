@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
                 const token = localStorage.getItem('token');
                 if (token) {
                     const userData = await authService.getProfile();
-                    setUser(userData);
+                    setUser(userData.data);
                 }
             } catch (error) {
                 console.error('Auth check failed', error);

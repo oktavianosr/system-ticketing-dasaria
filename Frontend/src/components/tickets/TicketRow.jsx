@@ -31,6 +31,11 @@ const TicketRow = ({ ticket, index }) => {
                     {ticket.priority}
                 </span>
             </td>
+            <td className="px-6 py-4 text-sm">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${priorityColors[ticket.assigned_to?.name] || 'bg-gray-100 text-gray-700'}`}>
+                    {ticket.assigned_to?.name || 'Unassigned'}
+                </span>
+            </td>
             <td className="px-6 py-4 text-sm text-right">
                 <button
                     onClick={(e) => { e.stopPropagation(); navigate(`/tickets/${ticket.id}`); }}

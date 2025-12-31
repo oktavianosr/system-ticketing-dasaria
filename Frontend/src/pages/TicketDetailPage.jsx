@@ -84,7 +84,7 @@ const TicketDetailPage = () => {
         if (!commentText.trim()) return;
         setSubmittingComment(true);
         try {
-            await ticketService.addComment(id, { body: commentText });
+            await ticketService.addComment(id, commentText);
             showAlert('Comment added', 'success');
             fetchTicket();
         } catch (error) {

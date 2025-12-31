@@ -33,7 +33,7 @@ class TicketController extends Controller
                 return response()->json([
                     "success" => true,
                     "message" => "successful getting all tickets",
-                    "data" => $tickets,
+                    "data" => TicketResource::collection($tickets),
                 ], Response::HTTP_OK);
             }
 
@@ -42,7 +42,7 @@ class TicketController extends Controller
             return response()->json([
                 "success" => true,
                 "message" => "successful getting all tickets",
-                "data" => $tickets,
+                "data" => TicketResource::collection($tickets),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
@@ -268,6 +268,7 @@ class TicketController extends Controller
                 "data" => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
 
 
     }

@@ -21,8 +21,8 @@ export const ticketService = {
         const response = await axiosInstance.delete(`/tickets/${id}`);
         return response.data;
     },
-    addComment: async (ticketId, comment) => {
-        const response = await axiosInstance.post(`/tickets/${ticketId}/comments`, { comment });
+    addComment: async (ticketId, text) => {
+        const response = await axiosInstance.post(`/tickets/${ticketId}/comments`, { body: text });
         return response.data;
     },
     getComments: async (ticketId) => {
@@ -30,7 +30,7 @@ export const ticketService = {
         return response.data;
     },
     assignTicket: async (ticketId, agentId) => {
-        const response = await axiosInstance.post(`/tickets/${ticketId}/assign`, { assigned_to: agentId });
+        const response = await axiosInstance.put(`/tickets/${ticketId}/assign`, { assigned_to: agentId });
         return response.data;
     }
 };

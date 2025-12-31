@@ -14,10 +14,10 @@ const SearchBar = ({ onSearch }) => {
         <div className="w-full">
             <InputField
                 fullWidth
-                placeholder="Search tickets by subject or ID..."
+                placeholder="Search tickets by title or ID..."
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full"
+                className="w-full p-4"
             />
         </div>
     );
