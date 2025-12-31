@@ -29,7 +29,6 @@ const CommentForm = ({ onSubmit, isSubmitting = false }) => {
                     variant="primary"
                     size="sm"
                     disabled={!text.trim() || isSubmitting}
-                    isLoading={isSubmitting}
                 >
                     Post Reply
                 </Button>

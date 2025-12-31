@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import InputField from '../components/shared/InputField';
 import Button from '../components/shared/Button';
 import { useUIContext } from '../context/UIContext';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 const LoginPage = () => {
     const { login } = useAuth();
@@ -20,15 +19,15 @@ const LoginPage = () => {
         const newErrors = {};
 
         if (!email) {
-            newErrors.email = 'Email wajib diisi';
+            newErrors.email = 'Email must be filled';
         } else if (!/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Format email tidak valid';
+            newErrors.email = 'Format email is not valid';
         }
 
         if (!password) {
-            newErrors.password = 'Password wajib diisi';
+            newErrors.password = 'Password must be filled';
         } else if (password.length < 6) {
-            newErrors.password = 'Password minimal 6 karakter';
+            newErrors.password = 'Password must be at least 6 characters';
         }
 
         return newErrors;
@@ -55,7 +54,7 @@ const LoginPage = () => {
                 navigate('/tickets');
             }
         } catch (error) {
-            showAlert(error.message || 'Login gagal. Cek kembali email dan password Anda.', 'error');
+            showAlert(error.message || 'Login failed. Please check your email and password.', 'error');
             setIsLoading(false);
         } finally {
             setIsLoading(false);

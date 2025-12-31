@@ -40,7 +40,7 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         const customError = {
-            message: 'Terjadi kesalahan sistem',
+            message: 'System error occurred',
             errors: null,
             status: error.response?.status
         };
@@ -55,7 +55,7 @@ axiosInstance.interceptors.response.use(
                 customError.message = data.errors[firstErrorField][0];
             }
         } else if (error.request) {
-            customError.message = 'Koneksi ke server terputus';
+            customError.message = 'Connection to server lost';
         }
 
         return Promise.reject(customError);

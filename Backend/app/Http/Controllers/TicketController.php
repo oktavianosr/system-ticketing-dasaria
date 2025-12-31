@@ -14,13 +14,16 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\TicketResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CommentStoreRequest;
+use App\Services\SocketBroadcastService;
 
 class TicketController extends Controller
 {
     protected $ticketService;
-    public function __construct(TicketService $ticketService)
+    protected $socketBroadcastService;
+    public function __construct(TicketService $ticketService, SocketBroadcastService $socketBroadcastService)
     {
         $this->ticketService = $ticketService;
+        $this->socketBroadcastService = $socketBroadcastService;
     }
 
     public function show(Request $request)
@@ -188,10 +191,17 @@ class TicketController extends Controller
         try {
             $comment = $this->ticketService->addComment($id, $data);
 
+            $response = new CommentResource($comment);
+
+            $this->socketBroadcastService->broadcast([
+                'event' => 'comment_created',
+                'data' => $response,
+            ]);
+
             return response()->json([
                 "success" => true,
                 "message" => "success creating comment",
-                "data" => new CommentResource($comment),
+                "data" => $response,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([

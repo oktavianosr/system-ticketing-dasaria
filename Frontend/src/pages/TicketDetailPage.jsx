@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TicketHeader from '../components/tickets/TicketHeader';
 import TicketInfo from '../components/tickets/TicketInfo';
@@ -10,6 +10,7 @@ import { ticketService } from '../api/services/ticketService';
 import { userService } from '../api/services/userService';
 import { useUIContext } from '../context/UIContext';
 import { useAuth } from '../hooks/useAuth';
+import { useSocketNotifications } from '../hooks/useSocketNotification';
 
 const TicketDetailPage = () => {
     const { id } = useParams();
@@ -19,21 +20,25 @@ const TicketDetailPage = () => {
 
     const [ticket, setTicket] = useState(null);
     const [agents, setAgents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [submittingComment, setSubmittingComment] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [assigningAgent, setAssigningAgent] = useState(false);
 
     const isAdminOrAgent = user?.role === 'admin' || user?.role === 'agent';
 
-    const fetchTicket = useCallback(async () => {
-        setLoading(true);
+    const fetchTicket = useCallback(async (isInitial = false) => {
+        if (isInitial) setInitialLoading(true);
+        else setLoading(true);
+
         try {
             const response = await ticketService.getById(id);
             setTicket(response.data || response);
         } catch (error) {
             showAlert(error.message || 'Failed to load ticket', 'error');
         } finally {
+            setInitialLoading(false);
             setLoading(false);
         }
     }, [id, showAlert]);
@@ -46,10 +51,10 @@ const TicketDetailPage = () => {
         } catch (error) {
             showAlert(error.message || 'Failed to load agents', 'error');
         }
-    }, [isAdminOrAgent]);
+    }, [isAdminOrAgent, showAlert]);
 
     useEffect(() => {
-        fetchTicket();
+        fetchTicket(true);
         fetchAgents();
     }, [fetchTicket, fetchAgents]);
 
@@ -94,7 +99,38 @@ const TicketDetailPage = () => {
         }
     };
 
-    if (loading) {
+
+    const socketCallbacks = useMemo(() => ({
+        onCommentCreated: (data) => {
+            if (data.ticket_id === parseInt(id)) {
+                setTicket(prev => {
+                    // Prevent duplicate comments if we already fetched/added it
+                    const exists = prev.comments?.some(c => c.id === data.id);
+                    if (exists) return prev;
+
+                    return {
+                        ...prev,
+                        comments: [...(prev.comments || []), data]
+                    };
+                });
+
+                // Only show alert if the comment is NOT from the current user
+                if (data.user?.id !== user?.id) {
+                    showAlert(`New comment from ${data.user?.name || 'someone'}`, 'info');
+                }
+            }
+        },
+        onStatusChanged: (data) => {
+            if (data.ticket_id === parseInt(id)) {
+                setTicket(prev => ({ ...prev, status: data.status }));
+                showAlert(`Ticket status changed to ${data.status}`, 'info');
+            }
+        }
+    }), [id, showAlert, user?.id]);
+
+    useSocketNotifications(id, socketCallbacks);
+
+    if (initialLoading) {
         return (
             <div className="bg-gray-50 min-h-screen flex items-center justify-center">
                 <LoadingSpinner />
@@ -118,12 +154,20 @@ const TicketDetailPage = () => {
     return (
         <div className="bg-gray-50 min-h-screen p-8">
             <div className="max-w-4xl mx-auto space-y-6">
-                <Button variant="outline" size="sm" onClick={() => navigate('/tickets')}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </Button>
+                <div className="flex items-center justify-between">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/tickets')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back
+                    </Button>
+                    {loading && (
+                        <div className="flex items-center gap-2 text-sm text-blue-600">
+                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            Refreshing...
+                        </div>
+                    )}
+                </div>
 
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <TicketHeader ticket={ticket} />

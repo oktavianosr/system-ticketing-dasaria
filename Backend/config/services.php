@@ -34,5 +34,8 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'socket_bridge' => [
+        'url' => env('SOCKET_BRIDGE_URL', 'http://localhost:3000'),
+    ],
 
 ];
