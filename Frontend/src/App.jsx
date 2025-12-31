@@ -1,18 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { UIProvider } from './context/UIContext';
+import MainLayout from './components/layout/MainLayout';
+import ProtectedRoute from './components/layout/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import TicketListPage from './pages/TicketListPage';
+import TicketDetailPage from './pages/TicketDetailPage';
+import ProfilePage from './pages/ProfilePage';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className="container">
-        <h1>GOTCHU</h1>
-      </div>
-    </>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <UIProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+
+            <Route element={<ProtectedRoute />}>
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Navigate to="/tickets" replace />} />
+                <Route path="/tickets" element={<TicketListPage />} />
+                <Route path="/tickets/:id" element={<TicketDetailPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<div>Not Found</div>} />
+          </Routes>
+        </UIProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
