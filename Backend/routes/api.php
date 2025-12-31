@@ -14,10 +14,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get("me", [AuthenticationController::class, "me"]);
 
     // Ticket
+    Route::get("tickets", [TicketController::class, "show"]);
     Route::post("tickets", [TicketController::class, "store"]);
-    Route::get("tickets", [TicketController::class, "index"]);
-    Route::get("tickets/{id}", [TicketController::class, "show"]);
+    Route::get("tickets/{id}", [TicketController::class, "showById"]);
     Route::put("tickets/{id}", [TicketController::class, "update"]);
+
+    // Assign
+    Route::put("tickets/{id}/assign", [TicketController::class, "assign"]);
 
     // Comment
     Route::post("tickets/{id}/comments", [TicketController::class, "storeComment"]);

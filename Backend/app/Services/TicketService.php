@@ -36,12 +36,6 @@ class TicketService
         $ticket = $this->ticketRepository->getTicketById($id);
         $user = auth()->user();
 
-        // 1. Check Authorization
-        if ($user->isCustomer() && $ticket->created_by != $user->id) {
-            throw new \Exception("You are not authorized to comment on this ticket", 403);
-        }
-
-        // 2. Prepare Comment Data
         $commentData = [
             'body' => $data['body'],
             'created_by' => $user->id,
@@ -60,6 +54,75 @@ class TicketService
 
             DB::commit();
             return $comment;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateTicket($ticket, array $data)
+    {
+        DB::beginTransaction();
+        try {
+            $updatedTicket = $this->ticketRepository->update($ticket, $data);
+            DB::commit();
+            return $updatedTicket;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+    public function createTicket(array $data)
+    {
+        $user = auth()->user();
+
+        if ($user->isAgent()) {
+            throw new \Exception("You are not authorized to create ticket", 403);
+        }
+
+        $formattedData = [
+            'created_by' => $user->id,
+            'code' => "TIC-" . rand(1000, 9999),
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'priority' => $data['priority'],
+            'status' => $data['status'] ?? 'open',
+        ];
+
+        DB::beginTransaction();
+        try {
+            $ticket = $this->ticketRepository->create($formattedData);
+            DB::commit();
+            return $ticket;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function assignAgent($ticket, array $data)
+    {
+        $user = auth()->user();
+        DB::beginTransaction();
+
+        try {
+            $oldAgent = $ticket->assigned_to;
+            $newAgent = $data['assigned_to'];
+
+            $assigner = $user->isAdmin() ? $user->id : $user->id;
+
+            if ($oldAgent == $newAgent) {
+                throw new \Exception('Ticket is already assigned to this agent', 403);
+            }
+
+            $ticket = $this->ticketRepository->assignAgent($ticket, [
+                'assigned_to' => $newAgent,
+                'assigned_by' => $assigner,
+                'assigned_at' => now(),
+            ]);
+
+            DB::commit();
+            return $ticket;
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

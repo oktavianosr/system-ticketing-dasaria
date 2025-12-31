@@ -44,7 +44,7 @@ class TicketSeeder extends Seeder
             $randomPriority = collect($priorities)->random();
 
 
-            // 1. Buat Tiket
+
             $ticket = Ticket::create([
                 'code' => 'TIC-' . (1000 + $index),
                 'title' => $s['title'],
@@ -53,9 +53,11 @@ class TicketSeeder extends Seeder
                 'priority' => $randomPriority,
                 'created_by' => $customer->id,
                 'assigned_to' => $agent->id,
+                'assigned_by' => $agent->id,
+                'assigned_at' => now(),
             ]);
 
-            // 2. Buat Alur 20 Komentar
+
             $conversationFlow = [
                 "Halo, mohon dibantu kendala saya.",
                 "Baik Bapak/Ibu, mohon maaf atas ketidaknyamanannya. Boleh dibantu nomor pelanggan?",
@@ -79,10 +81,15 @@ class TicketSeeder extends Seeder
                 "Sudah lancar kembali! Terima kasih tim ISP atas respon cepatnya."
             ];
 
-            foreach ($conversationFlow as $step => $text) {
+            // Limit comments to exactly 20 total across the 15 scenarios.
+            // The first 5 tickets get 2 comments, the remaining 10 get 1 comment.
+            // (5 * 2) + (10 * 1) = 20
+            $commentCount = ($index < 5) ? 2 : 1;
+
+            foreach (array_slice($conversationFlow, 0, $commentCount) as $step => $text) {
                 Comment::create([
                     'ticket_id' => $ticket->id,
-                    'created_by' => ($step % 2 == 0) ? $customer->id : $agent->id, // Selang-seling Customer & Agent
+                    'created_by' => ($step % 2 == 0) ? $customer->id : $agent->id,
                     'body' => $text,
                     'created_at' => now()->subHours(20)->addMinutes($step * 10),
                 ]);

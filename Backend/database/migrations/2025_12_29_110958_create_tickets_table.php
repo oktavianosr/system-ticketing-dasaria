@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
             $table->foreignId('created_by')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('assigned_to')->nullable();
+            $table->integer('assigned_by')->nullable();
+            $table->timestamp('assigned_at')->nullable();
             $table->integer('updated_by')->references('id')->on('users')->cascadeOnDelete()->nullable();
             $table->timestamps();
             $table->timestamp('completed_at')->nullable();

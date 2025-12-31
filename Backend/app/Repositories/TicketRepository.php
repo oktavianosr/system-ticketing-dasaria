@@ -59,7 +59,7 @@ class TicketRepository
     {
         return $this->ticket->with('comments')->findOrFail($id);
     }
-    public function getAllComment($id)
+    public function getComment($id)
     {
         return $this->ticket->with('comments')->findOrFail($id);
     }
@@ -78,5 +78,24 @@ class TicketRepository
         }
         $ticket->save();
         return $ticket;
+    }
+
+    public function update($ticket, array $data)
+    {
+        $ticket->update($data);
+        return $ticket;
+    }
+    public function create(array $data)
+    {
+        return $this->ticket->create($data);
+    }
+    public function assignAgent($ticket, array $data)
+    {
+        $ticket->update([
+            'assigned_to' => $data['assigned_to'],
+            'assigned_at' => now(),
+            'assigned_by' => $data['assigned_by'],
+        ]);
+        return $ticket->fresh();
     }
 }

@@ -16,6 +16,11 @@ class Ticket extends Model
         'category',
         'created_by',
         'assigned_to',
+        'assigned_by',
+        'assigned_at',
+        'updated_by',
+        'completed_at',
+        'code',
     ];
 
     public function user()
@@ -35,5 +40,13 @@ class Ticket extends Model
     public function assignedToUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+    public function assignedByUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_by');
+    }
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

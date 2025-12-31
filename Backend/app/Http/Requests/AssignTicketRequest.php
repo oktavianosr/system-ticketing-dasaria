@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TicketStoreRequest extends FormRequest
+class AssignTicketRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,16 @@ class TicketStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'priority' => 'required|string|in:low,medium,high',
-            'status' => 'string|in:open,closed,in_progress,resolved|default:open',
-
+            'assigned_to' => [
+                'required',
+                'exists:users,id',
+                function ($attribute, $value, $fail) {
+                    $user = \App\Models\User::find($value);
+                    if (!$user || !$user->isAgent()) {
+                        $fail('The selected user must be an agent.');
+                    }
+                },
+            ],
         ];
     }
 }

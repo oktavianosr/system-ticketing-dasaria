@@ -24,7 +24,6 @@ class CommentStoreRequest extends FormRequest
         return [
             //
             "body" => "required|string",
-            "status" => auth()->user()->role == 'admin' ? 'required|in:open,closed,resolved,in_progress' : 'nullable',
         ];
     }
 }
