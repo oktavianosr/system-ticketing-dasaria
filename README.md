@@ -12,17 +12,13 @@ mysql --version      # MySQL 8+ atau MariaDB
 # MySQL: https://dev.mysql.com/downloads/
 
 
-# STEP 1 install semua package php via 
-cd Backend
-composer install
+# 1️⃣ Backend Laravel
+cd backend
+composer install          # ← Install PHP dependencies
+cp .env.example .env     # ← Copy environment
+php artisan key:generate # ← Generate key
 
-# STEP 2 konfigurasi file .env
-cp .env.example .env
-
-# STEP 3 generate key 
-php artisan key:generate
-
-# STEP 4 membuat database bebas via cli atau phpmyadmin
+# 2️⃣ Membuat database
 Opsi A: Via CLI
 mysql -u root -p (jika via cli)
 CREATE DATABASE system_ticketing_dasaria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -36,8 +32,18 @@ Nama Database: system_ticketing_dasaria
 Collation: utf8mb4_unicode_ci
 Klik "Create"
 
-# STEP 5 migrate & seed database 
-php artisan migrate:fresh --seed
+php artisan migrate:fresh --seed # ← Setup database
+php artisan serve        # ← Start server ✅
 
-# STEP 6 start server di port 8000
-php artisan serve
+# 3️⃣ Frontend React
+cd ../Frontend
+npm install
+cp .env.example .env
+npm run dev
+
+# 4️⃣ Socket
+cd ../Socket
+npm install
+cp .env.example .env
+npm run dev
+
