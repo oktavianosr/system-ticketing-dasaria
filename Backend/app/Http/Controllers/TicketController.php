@@ -42,11 +42,10 @@ class TicketController extends Controller
 
 
 
-            return response()->json([
-                "success" => true,
-                "message" => "successful getting all tickets",
-                "data" => TicketResource::collection($tickets),
-            ], Response::HTTP_OK);
+            return TicketResource::collection($tickets)->additional([
+            "success" => true,
+            "message" => "successful getting all tickets",
+        ]);
         } catch (\Exception $e) {
             return response()->json([
                 "success" => false,
