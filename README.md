@@ -1,49 +1,107 @@
-# check apakah sudah terinstall
-php --version        # php 8.1++
-composer --version   # Composer 2.x
-node --version       # Node.js 22+ required
-npm --version        # NPM 10.+
-mysql --version      # MySQL 8+ atau MariaDB
+# System Ticketing Dasaria
 
-# Jika belum install, download dari:
-# PHP: https://www.php.net/downloads
-# Composer: https://getcomposer.org/
-# Node.js: https://nodejs.org/
-# MySQL: https://dev.mysql.com/downloads/
+# Latar Belakang
 
+    Sistem ticketing adalah alat yang digunakan untuk mengelola dan memantau tiket yang dibuat oleh pengguna. Sistem ini dapat digunakan untuk berbagai tujuan, seperti mengelola tiket masalah di perusahaan, mengelola tiket support di layanan pelanggan, atau mengelola tiket peminjaman di perpustakaan.
 
-# 1️⃣ Backend Laravel
-cd backend
-composer install          # ← Install PHP dependencies
-cp .env.example .env     # ← Copy environment
-php artisan key:generate # ← Generate key
+# Fitur Utama
 
-# 2️⃣ Membuat database
-Opsi A: Via CLI
-mysql -u root -p (jika via cli)
-CREATE DATABASE system_ticketing_dasaria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-EXIT;
+    1. Login
+    2. Register
+    3. Dashboard
+    4. Ticket
+    5. Profile
+    6. Setting
 
-Opsi B: Via phpMyAdmin
+# Tech Stack
 
-Buka http://localhost/phpmyadmin
-Klik "New" di sidebar kiri
-Nama Database: system_ticketing_dasaria
-Collation: utf8mb4_unicode_ci
-Klik "Create"
+    Backend: Laravel 12
+    Frontend: React 18
+    Database: MySQL 8
+    Server: PHP 8
+    Socket: Express.js
 
-php artisan migrate:fresh --seed # ← Setup database
-php artisan serve        # ← Start server ✅
+# Arsitektur Singkat
 
-# 3️⃣ Frontend React
-cd ../Frontend
-npm install
-cp .env.example .env
-npm run dev
+    Project Menggunakan Pola Clean Architecture dengan pattern service repository untuk memisahkan logika bisnis dari controller.
 
-# 4️⃣ Socket
-cd ../Socket
-npm install
-cp .env.example .env
-npm run dev
+    Contoh alur:
+    Request -> Controller -> Service -> Repository -> Database -> Response
 
+# Prasyarat Minimum
+
+    1. PHP 8.1
+    2. MySQL 8.0
+    3. Node.js 16.0
+    4. Composer
+    
+# Instalasi
+    1. Clone repository
+      ```bash
+      git clone https://github.com/your-username/system-ticketing-dasaria.git
+      ```
+
+    2. Setup 
+
+       **a. Backend (Laravel)**
+          - Masuk ke direktori backend:
+            ```bash
+            cd Backend
+            ```
+          - Install dependencies:
+            ```bash
+            composer install
+            ```
+          - Setup Environment:
+            Copy file `.env` dan generate key:
+            ```bash
+            cp .env.example .env
+            php artisan key:generate
+            ```
+            > **PENTING**: Buka file `.env` dan sesuaikan konfigurasi database (DB_DATABASE, DB_USERNAME, DB_PASSWORD).
+
+          - Setup Database & Migrations:
+            Pastikan database `system_ticketing_dasaria` sudah dibuat, lalu jalankan:
+            ```bash
+            php artisan migrate:fresh --seed
+            ```
+          - Jalankan Server:
+            ```bash
+            php artisan serve
+            ```
+
+       **b. Frontend (React)**
+          - Masuk ke direktori frontend (terminal baru):
+            ```bash
+            cd Frontend
+            ```
+          - Install dependencies:
+            ```bash
+            npm install
+            ```
+          - Setup Environment:
+            ```bash
+            cp .env.example .env
+            ```
+          - Jalankan Aplikasi:
+            ```bash
+            npm run dev
+            ```
+
+       **c. Socket Server**
+          - Masuk ke direktori socket (terminal baru):
+            ```bash
+            cd Socket
+            ```
+          - Install dependencies:
+            ```bash
+            npm install
+            ```
+          - Setup Environment:
+            ```bash
+            cp .env.example .env
+            ```
+          - Jalankan Server:
+            ```bash
+            npm run dev
+            ```
