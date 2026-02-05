@@ -24,7 +24,7 @@ class TicketFactory extends Factory
         $userIds = User::pluck('id')->toArray();
 
         return [
-            'code' => 'TIK-' . strtoupper($this->faker->unique()->bothify('???-####')),
+            'code' => 'TIK-'.strtoupper($this->faker->unique()->bothify('???-####')),
             'title' => $this->faker->sentence(6),
             'description' => $this->faker->paragraph(4),
             'priority' => $this->faker->randomElement($priorities),
@@ -42,7 +42,7 @@ class TicketFactory extends Factory
      */
     public function open(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'open',
         ]);
     }
@@ -52,7 +52,7 @@ class TicketFactory extends Factory
      */
     public function inProgress(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'in_progress',
         ]);
     }
@@ -62,7 +62,7 @@ class TicketFactory extends Factory
      */
     public function resolved(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'resolved',
         ]);
     }
@@ -72,7 +72,7 @@ class TicketFactory extends Factory
      */
     public function closed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'closed',
         ]);
     }
@@ -82,7 +82,7 @@ class TicketFactory extends Factory
      */
     public function highPriority(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'priority' => 'high',
         ]);
     }

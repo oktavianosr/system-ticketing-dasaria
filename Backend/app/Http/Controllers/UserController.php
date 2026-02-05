@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\UserService;
 use App\Http\Resources\UserResources;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,15 +25,15 @@ class UserController extends Controller
             $agents = $this->userService->getAgents();
 
             return response()->json([
-                "success" => true,
-                "message" => "Agents retrieved successfully",
-                "data" => UserResources::collection($agents),
+                'success' => true,
+                'message' => 'Agents retrieved successfully',
+                'data' => UserResources::collection($agents),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "Failed to get agents",
-                "error" => $e->getMessage(),
+                'success' => false,
+                'message' => 'Failed to get agents',
+                'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -52,15 +52,15 @@ class UserController extends Controller
             $user = $this->userService->updateProfile($validated);
 
             return response()->json([
-                "success" => true,
-                "message" => "Profile updated successfully",
-                "data" => new UserResources($user),
+                'success' => true,
+                'message' => 'Profile updated successfully',
+                'data' => new UserResources($user),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "Failed to update profile",
-                "error" => $e->getMessage(),
+                'success' => false,
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -79,14 +79,15 @@ class UserController extends Controller
             $this->userService->changePassword($validated);
 
             return response()->json([
-                "success" => true,
-                "message" => "Password changed successfully",
+                'success' => true,
+                'message' => 'Password changed successfully',
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $statusCode = $e->getCode() === 400 ? Response::HTTP_BAD_REQUEST : Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return response()->json([
-                "success" => false,
-                "message" => $e->getMessage(),
+                'success' => false,
+                'message' => $e->getMessage(),
             ], $statusCode);
         }
     }

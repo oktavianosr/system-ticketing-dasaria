@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\UserResources;
 use App\Services\AuthenticationService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationController extends Controller
 {
@@ -23,27 +22,27 @@ class AuthenticationController extends Controller
         try {
             $result = $this->authenticationService->login($request->only('email', 'password'));
 
-            if (!$result) {
+            if (! $result) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "The provided credentials do not match our records.",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'The provided credentials do not match our records.',
+                    'data' => null,
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
             return response()->json([
-                "success" => true,
+                'success' => true,
                 'message' => 'Login Succesful',
                 'data' => [
                     'token' => $result['token'],
                     'user' => new UserResources($result['user']),
-                ]
+                ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "Something went wrong",
-                "data" => null,
+                'success' => false,
+                'message' => 'Something went wrong',
+                'data' => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -54,13 +53,13 @@ class AuthenticationController extends Controller
             $this->authenticationService->logout(Auth::user());
 
             return response()->json([
-                "success" => true,
+                'success' => true,
                 'message' => 'Logout Successful',
                 'data' => null,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
+                'success' => false,
                 'message' => 'Something went wrong',
                 'data' => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -73,14 +72,14 @@ class AuthenticationController extends Controller
             $user = $this->authenticationService->me();
 
             return response()->json([
-                "success" => true,
+                'success' => true,
                 'message' => 'User fetched successfully',
                 'data' => new UserResources($user),
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
+                'success' => false,
                 'message' => 'Something went wrong',
                 'data' => null,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

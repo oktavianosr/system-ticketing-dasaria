@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Ticket;
 use App\Repositories\TicketRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +17,7 @@ class TicketService
     public function getAllTickets($params = [])
     {
         $user = auth()->user();
+
         return $this->ticketRepository->getAllTickets($params, $user);
     }
 
@@ -46,13 +46,14 @@ class TicketService
         try {
             $comment = $this->ticketRepository->addComment($ticket, $commentData);
 
-            if (!empty($data['status'])) {
+            if (! empty($data['status'])) {
                 if ($user->isAdmin() || ($user->isAgent() && $ticket->assigned_to == $user->id)) {
                     $this->ticketRepository->updateTicketStatus($ticket, $data['status']);
                 }
             }
 
             DB::commit();
+
             return $comment;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -66,23 +67,25 @@ class TicketService
         try {
             $updatedTicket = $this->ticketRepository->update($ticket, $data);
             DB::commit();
+
             return $updatedTicket;
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
     }
+
     public function createTicket(array $data)
     {
         $user = auth()->user();
 
         if ($user->isAgent()) {
-            throw new \Exception("You are not authorized to create ticket", 403);
+            throw new \Exception('You are not authorized to create ticket', 403);
         }
 
         $formattedData = [
             'created_by' => $user->id,
-            'code' => "TIC-" . rand(1000, 9999),
+            'code' => 'TIC-'.rand(1000, 9999),
             'title' => $data['title'],
             'description' => $data['description'],
             'priority' => $data['priority'],
@@ -93,6 +96,7 @@ class TicketService
         try {
             $ticket = $this->ticketRepository->create($formattedData);
             DB::commit();
+
             return $ticket;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -122,6 +126,7 @@ class TicketService
             ]);
 
             DB::commit();
+
             return $ticket;
         } catch (\Exception $e) {
             DB::rollBack();

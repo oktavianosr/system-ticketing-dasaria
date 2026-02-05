@@ -27,7 +27,7 @@ class AssignTicketRequest extends FormRequest
                 'exists:users,id',
                 function ($attribute, $value, $fail) {
                     $user = \App\Models\User::find($value);
-                    if (!$user || !$user->isAgent()) {
+                    if (! $user || ! $user->isAgent()) {
                         $fail('The selected user must be an agent.');
                     }
                 },

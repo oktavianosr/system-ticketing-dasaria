@@ -13,7 +13,7 @@ class TicketRepository
         $this->ticket = $ticket;
     }
 
-    public function getAllTickets($params = [], $user)
+    public function getAllTickets($params, $user)
     {
         $query = $this->ticket->select('*') // Select all fields by default
             ->with('comments');
@@ -25,33 +25,34 @@ class TicketRepository
         // Admin and Agent allow all
 
         // Searching
-        if (!empty($params['search'])) {
+        if (! empty($params['search'])) {
             $query->where(function ($q) use ($params) {
-                $q->where('title', 'like', '%' . $params['search'] . '%')
-                    ->orWhere('description', 'like', '%' . $params['search'] . '%');
+                $q->where('title', 'like', '%'.$params['search'].'%')
+                    ->orWhere('description', 'like', '%'.$params['search'].'%');
             });
         }
 
         // Filtering status/priority
-        if (!empty($params["status"])) {
-            $query->where("status", $params["status"]);
+        if (! empty($params['status'])) {
+            $query->where('status', $params['status']);
         }
 
-        if (!empty($params["priority"])) {
-            $query->where("priority", $params["priority"]);
+        if (! empty($params['priority'])) {
+            $query->where('priority', $params['priority']);
         }
 
         // Custom sorting
-        $sortBy = $params["sort_by"] ?? "created_at";
-        $sortOrder = $params["sort_order"] ?? "desc";
-        if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
+        $sortBy = $params['sort_by'] ?? 'created_at';
+        $sortOrder = $params['sort_order'] ?? 'desc';
+        if (! in_array(strtolower($sortOrder), ['asc', 'desc'])) {
             $sortOrder = 'desc';
         }
 
         $query->orderBy($sortBy, $sortOrder);
 
         // Pagination
-        $pagination = $params["pagination"] ?? 10;
+        $pagination = $params['pagination'] ?? 10;
+
         return $query->paginate($pagination);
     }
 
@@ -59,6 +60,7 @@ class TicketRepository
     {
         return $this->ticket->with('comments')->findOrFail($id);
     }
+
     public function getComment($id)
     {
         return $this->ticket->with('comments')->findOrFail($id);
@@ -69,7 +71,6 @@ class TicketRepository
         return $ticket->comments()->create($data);
     }
 
-
     public function updateTicketStatus($ticket, $status)
     {
         $ticket->status = $status;
@@ -77,18 +78,22 @@ class TicketRepository
             $ticket->completed_at = now();
         }
         $ticket->save();
+
         return $ticket;
     }
 
     public function update($ticket, array $data)
     {
         $ticket->update($data);
+
         return $ticket;
     }
+
     public function create(array $data)
     {
         return $this->ticket->create($data);
     }
+
     public function assignAgent($ticket, array $data)
     {
         $ticket->update([
@@ -96,6 +101,7 @@ class TicketRepository
             'assigned_at' => now(),
             'assigned_by' => $data['assigned_by'],
         ]);
+
         return $ticket->fresh();
     }
 }

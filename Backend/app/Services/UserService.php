@@ -38,10 +38,10 @@ class UserService
         $user = auth()->user();
         $updateData = [];
 
-        if (!empty($data['name'])) {
+        if (! empty($data['name'])) {
             $updateData['name'] = $data['name'];
         }
-        if (!empty($data['phone'])) {
+        if (! empty($data['phone'])) {
             $updateData['phone'] = $data['phone'];
         }
 
@@ -55,12 +55,12 @@ class UserService
     {
         $user = auth()->user();
 
-        if (!Hash::check($data['current_password'], $user->password)) {
+        if (! Hash::check($data['current_password'], $user->password)) {
             throw new \Exception('Current password is incorrect', 400);
         }
 
         return $this->userRepository->update($user, [
-            'password' => Hash::make($data['password'])
+            'password' => Hash::make($data['password']),
         ]);
     }
 }

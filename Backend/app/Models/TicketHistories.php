@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TicketHistories extends Model
 {
     public $timestamps = false;
+
     protected $fillable = [
         'ticket_id',
         'changed_by',
@@ -26,6 +27,4 @@ class TicketHistories extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
 }

@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Facades\Auth;
+
 use App\Repositories\AuthenticationRepository;
+use Illuminate\Support\Facades\Auth;
 
 class AuthenticationService
 {
@@ -15,7 +16,7 @@ class AuthenticationService
 
     public function login($data)
     {
-        if (!Auth::guard('web')->attempt($data)) {
+        if (! Auth::guard('web')->attempt($data)) {
             return null;
         }
 

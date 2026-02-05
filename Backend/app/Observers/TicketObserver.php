@@ -14,6 +14,7 @@ class TicketObserver
             $ticket->updated_by = auth()->user()->id;
         }
     }
+
     /**
      * Handle the Ticket "created" event.
      */
@@ -23,8 +24,9 @@ class TicketObserver
         $dirtyFields = $ticket->getDirty();
 
         foreach ($dirtyFields as $field => $newValue) {
-            if ($field === 'updated_at')
+            if ($field === 'updated_at') {
                 continue;
+            }
 
             $oldValue = $ticket->getOriginal($field);
 
@@ -49,12 +51,14 @@ class TicketObserver
 
         $ignoredFields = ['updated_at', 'created_at'];
         foreach ($dirtyFields as $field => $newValue) {
-            if (in_array($field, $ignoredFields))
+            if (in_array($field, $ignoredFields)) {
                 continue;
+            }
 
             $oldValue = $ticket->getOriginal($field);
-            if ($oldValue == $newValue)
+            if ($oldValue == $newValue) {
                 continue;
+            }
 
             $changedBy = auth()->check() ? auth()->id() : null;
 
@@ -69,27 +73,26 @@ class TicketObserver
             ]);
         }
     }
+
     protected function generateNote($field, $oldValue, $newValue): string
     {
 
         if ($field === 'assigned_to') {
             $oldAgent = $oldValue ? User::find($oldValue)?->name : 'Unassigned';
             $newAgent = $newValue ? User::find($newValue)?->name : 'Unassigned';
+
             return $oldValue
                 ? "Re-assigned from {$oldAgent} to {$newAgent}"
                 : "Assigned to {$newAgent}";
         }
 
-
         if ($field === 'status') {
             return "Status changed from '{$oldValue}' to '{$newValue}'";
         }
 
-
         if ($field === 'priority') {
             return "Priority changed from '{$oldValue}' to '{$newValue}'";
         }
-
 
         $fieldName = ucfirst(str_replace('_', ' ', $field));
         $oldVal = $oldValue ?? 'Not Set';
@@ -107,8 +110,9 @@ class TicketObserver
         $dirtyFields = $ticket->getDirty();
 
         foreach ($dirtyFields as $field => $newValue) {
-            if ($field === 'updated_at')
+            if ($field === 'updated_at') {
                 continue;
+            }
 
             $oldValue = $ticket->getOriginal($field);
 

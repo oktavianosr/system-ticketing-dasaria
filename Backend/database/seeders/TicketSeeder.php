@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comment;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\Comment;
 
 class TicketSeeder extends Seeder
 {
@@ -43,10 +43,8 @@ class TicketSeeder extends Seeder
             $randomStatus = collect($statuses)->random();
             $randomPriority = collect($priorities)->random();
 
-
-
             $ticket = Ticket::create([
-                'code' => 'TIC-' . (1000 + $index),
+                'code' => 'TIC-'.(1000 + $index),
                 'title' => $s['title'],
                 'description' => $s['desc'],
                 'status' => $randomStatus,
@@ -57,28 +55,27 @@ class TicketSeeder extends Seeder
                 'assigned_at' => now(),
             ]);
 
-
             $conversationFlow = [
-                "Halo, mohon dibantu kendala saya.",
-                "Baik Bapak/Ibu, mohon maaf atas ketidaknyamanannya. Boleh dibantu nomor pelanggan?",
-                "Nomor ID saya: " . rand(100000, 999999),
-                "Terima kasih, sedang saya lakukan pengecekan dari sistem kami.",
-                "Berapa lama ya proses pengecekannya?",
-                "Mohon tunggu 5-10 menit, kami sedang koordinasi dengan tim NOC.",
-                "Oke saya tunggu, tolong segera karena saya sedang meeting online.",
-                "Hasil pengecekan kami menunjukkan ada redaman tinggi di jalur kabel Anda.",
-                "Lalu solusinya bagaimana?",
-                "Kami perlu mengirimkan teknisi ke lokasi untuk pengecekan fisik kabel.",
-                "Kapan teknisi bisa datang?",
-                "Tersedia jadwal besok pagi jam 10:00, apakah Bapak/Ibu bersedia?",
-                "Bisa pagi ini tidak? Saya butuh sekali internetnya.",
-                "Kami usahakan cari jadwal darurat, mohon ditunggu sebentar.",
-                "Kabar baik, ada teknisi yang selesai lebih awal, mereka menuju lokasi sekarang.",
-                "Alhamdulillah, terima kasih banyak bantuannya.",
-                "Teknisi sudah sampai di lokasi? Mohon pastikan kabel di rumah aman.",
-                "Sudah sampai, mereka sedang mengecek tiang di depan rumah.",
-                "Kabel sudah disambung ulang, silakan dicoba kembali modemnya.",
-                "Sudah lancar kembali! Terima kasih tim ISP atas respon cepatnya."
+                'Halo, mohon dibantu kendala saya.',
+                'Baik Bapak/Ibu, mohon maaf atas ketidaknyamanannya. Boleh dibantu nomor pelanggan?',
+                'Nomor ID saya: '.rand(100000, 999999),
+                'Terima kasih, sedang saya lakukan pengecekan dari sistem kami.',
+                'Berapa lama ya proses pengecekannya?',
+                'Mohon tunggu 5-10 menit, kami sedang koordinasi dengan tim NOC.',
+                'Oke saya tunggu, tolong segera karena saya sedang meeting online.',
+                'Hasil pengecekan kami menunjukkan ada redaman tinggi di jalur kabel Anda.',
+                'Lalu solusinya bagaimana?',
+                'Kami perlu mengirimkan teknisi ke lokasi untuk pengecekan fisik kabel.',
+                'Kapan teknisi bisa datang?',
+                'Tersedia jadwal besok pagi jam 10:00, apakah Bapak/Ibu bersedia?',
+                'Bisa pagi ini tidak? Saya butuh sekali internetnya.',
+                'Kami usahakan cari jadwal darurat, mohon ditunggu sebentar.',
+                'Kabar baik, ada teknisi yang selesai lebih awal, mereka menuju lokasi sekarang.',
+                'Alhamdulillah, terima kasih banyak bantuannya.',
+                'Teknisi sudah sampai di lokasi? Mohon pastikan kabel di rumah aman.',
+                'Sudah sampai, mereka sedang mengecek tiang di depan rumah.',
+                'Kabel sudah disambung ulang, silakan dicoba kembali modemnya.',
+                'Sudah lancar kembali! Terima kasih tim ISP atas respon cepatnya.',
             ];
 
             // Limit comments to exactly 20 total across the 15 scenarios.

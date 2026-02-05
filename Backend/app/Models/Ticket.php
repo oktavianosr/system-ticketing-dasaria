@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'title',
         'description',
@@ -37,14 +38,17 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketHistories::class);
     }
+
     public function assignedToUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+
     public function assignedByUser()
     {
         return $this->belongsTo(User::class, 'assigned_by');
     }
+
     public function updatedByUser()
     {
         return $this->belongsTo(User::class, 'updated_by');

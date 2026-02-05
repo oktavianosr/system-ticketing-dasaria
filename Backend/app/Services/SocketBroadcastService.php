@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SocketBroadcastService
 {
@@ -18,7 +18,7 @@ class SocketBroadcastService
         } catch (\Exception $e) {
             Log::warning('Socket bridge broadcast failed', [
                 'error' => $e->getMessage(),
-                'payload' => $payload
+                'payload' => $payload,
             ]);
         }
     }

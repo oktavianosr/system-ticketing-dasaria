@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignTicketRequest;
+use App\Http\Requests\CommentStoreRequest;
+use App\Http\Requests\TicketStoreRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Http\Resources\CommentResource;
-use Illuminate\Http\Request;
-use App\Http\Requests\TicketStoreRequest;
-use App\Services\TicketService;
-use Symfony\Component\HttpFoundation\Response;
-use App\Models\Ticket;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\TicketResource;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\CommentStoreRequest;
 use App\Services\SocketBroadcastService;
+use App\Services\TicketService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class TicketController extends Controller
 {
     protected $ticketService;
+
     protected $socketBroadcastService;
+
     public function __construct(TicketService $ticketService, SocketBroadcastService $socketBroadcastService)
     {
         $this->ticketService = $ticketService;
@@ -33,24 +33,23 @@ class TicketController extends Controller
             $tickets = $this->ticketService->getAllTickets($params);
             if (Auth::user()->isCustomer()) {
                 $tickets = $tickets->where('created_by', Auth::user()->id);
+
                 return response()->json([
-                    "success" => true,
-                    "message" => "successful getting all tickets",
-                    "data" => TicketResource::collection($tickets),
+                    'success' => true,
+                    'message' => 'successful getting all tickets',
+                    'data' => TicketResource::collection($tickets),
                 ], Response::HTTP_OK);
             }
 
-
-
             return TicketResource::collection($tickets)->additional([
-            "success" => true,
-            "message" => "successful getting all tickets",
-        ]);
+                'success' => true,
+                'message' => 'successful getting all tickets',
+            ]);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "failed getting all tickets",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed getting all tickets',
+                'data' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -60,32 +59,32 @@ class TicketController extends Controller
         try {
             $ticket = $this->ticketService->getTicketById($id);
 
-            if (!$ticket) {
+            if (! $ticket) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "ticket not found",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'ticket not found',
+                    'data' => null,
                 ], Response::HTTP_NOT_FOUND);
             }
 
             if (Auth::user()->isCustomer() && $ticket->created_by != auth()->user()->id) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "You are not authorized to view this ticket",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'You are not authorized to view this ticket',
+                    'data' => null,
                 ], Response::HTTP_FORBIDDEN);
             }
 
             return response()->json([
-                "success" => true,
-                "message" => "success getting ticket",
-                "data" => new TicketResource($ticket),
+                'success' => true,
+                'message' => 'success getting ticket',
+                'data' => new TicketResource($ticket),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "failed getting ticket",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed getting ticket',
+                'data' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -98,16 +97,17 @@ class TicketController extends Controller
             $ticket = $this->ticketService->createTicket($data);
 
             return response()->json([
-                "success" => true,
-                "message" => "success creating ticket",
-                "data" => new TicketResource($ticket),
+                'success' => true,
+                'message' => 'success creating ticket',
+                'data' => new TicketResource($ticket),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $status = $e->getCode() == 403 ? Response::HTTP_FORBIDDEN : Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return response()->json([
-                "success" => false,
-                "message" => "failed creating ticket",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed creating ticket',
+                'data' => $e->getMessage(),
             ], $status);
         }
     }
@@ -121,37 +121,37 @@ class TicketController extends Controller
 
         if ($user->isCustomer()) {
             return response()->json([
-                "success" => false,
-                "message" => "You are not authorized to update this ticket",
-                "data" => null,
+                'success' => false,
+                'message' => 'You are not authorized to update this ticket',
+                'data' => null,
             ], Response::HTTP_FORBIDDEN);
         }
 
         if ($user->isAgent()) {
             if ($ticket->assigned_to != $user->id) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "You can only update tickets assigned to you",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'You can only update tickets assigned to you',
+                    'data' => null,
                 ], Response::HTTP_FORBIDDEN);
             }
 
             $allowedFields = ['status'];
             $forbiddenFields = array_diff(array_keys($data), $allowedFields);
 
-            if (!empty($forbiddenFields)) {
+            if (! empty($forbiddenFields)) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "Agents can only update the ticket status",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'Agents can only update the ticket status',
+                    'data' => null,
                 ], Response::HTTP_FORBIDDEN);
             }
 
-            if (isset($data['status']) && !in_array($data['status'], ['resolved', 'closed'])) {
+            if (isset($data['status']) && ! in_array($data['status'], ['resolved', 'closed'])) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "Agents can only set status to 'resolved' or 'closed'",
-                    "data" => null,
+                    'success' => false,
+                    'message' => "Agents can only set status to 'resolved' or 'closed'",
+                    'data' => null,
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
@@ -160,16 +160,17 @@ class TicketController extends Controller
             $ticket = $this->ticketService->updateTicket($ticket, $data);
 
             return response()->json([
-                "success" => true,
-                "message" => "success updating ticket",
-                "data" => new TicketResource($ticket),
+                'success' => true,
+                'message' => 'success updating ticket',
+                'data' => new TicketResource($ticket),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $status = $e->getCode() == 403 ? Response::HTTP_FORBIDDEN : Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return response()->json([
-                "success" => false,
-                "message" => "failed updating ticket",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed updating ticket',
+                'data' => $e->getMessage(),
             ], $status);
         }
     }
@@ -180,7 +181,7 @@ class TicketController extends Controller
         $user = auth()->user();
         $ticket = $this->ticketService->getTicketById($id);
 
-        if (!$user->isAdmin() && ($ticket->created_by != $user->id && $ticket->assigned_to != $user->id)) {
+        if (! $user->isAdmin() && ($ticket->created_by != $user->id && $ticket->assigned_to != $user->id)) {
             return response()->json([
                 'success' => false,
                 'message' => 'You are not authorized to comment on this ticket',
@@ -198,15 +199,15 @@ class TicketController extends Controller
             ]);
 
             return response()->json([
-                "success" => true,
-                "message" => "success creating comment",
-                "data" => $response,
+                'success' => true,
+                'message' => 'success creating comment',
+                'data' => $response,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "failed creating comment",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed creating comment',
+                'data' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -219,30 +220,30 @@ class TicketController extends Controller
 
             if (auth()->user()->isAdmin()) {
                 return response()->json([
-                    "success" => true,
-                    "message" => "success getting comment",
-                    "data" => new TicketResource($comment),
+                    'success' => true,
+                    'message' => 'success getting comment',
+                    'data' => new TicketResource($comment),
                 ], Response::HTTP_OK);
             }
 
             if ($comment->created_by != auth()->user()->id) {
                 return response()->json([
-                    "success" => false,
-                    "message" => "You are not authorized to view this comment",
-                    "data" => null,
+                    'success' => false,
+                    'message' => 'You are not authorized to view this comment',
+                    'data' => null,
                 ], Response::HTTP_FORBIDDEN);
             }
 
             return response()->json([
-                "success" => true,
-                "message" => "success getting comment",
-                "data" => new TicketResource($comment),
+                'success' => true,
+                'message' => 'success getting comment',
+                'data' => new TicketResource($comment),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "failed getting comment",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed getting comment',
+                'data' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -252,11 +253,11 @@ class TicketController extends Controller
         $ticket = $this->ticketService->getTicketById($id);
         $user = auth()->user();
 
-        if (!$user->isAdmin() && !$user->isAgent()) {
+        if (! $user->isAdmin() && ! $user->isAgent()) {
             return response()->json([
-                "success" => false,
-                "message" => "You are not authorized to assign ticket",
-                "data" => null,
+                'success' => false,
+                'message' => 'You are not authorized to assign ticket',
+                'data' => null,
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -266,19 +267,17 @@ class TicketController extends Controller
             $ticket = $this->ticketService->assignAgent($ticket, $data);
 
             return response()->json([
-                "success" => true,
-                "message" => "success assigning ticket",
-                "data" => new TicketResource($ticket),
+                'success' => true,
+                'message' => 'success assigning ticket',
+                'data' => new TicketResource($ticket),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "success" => false,
-                "message" => "failed assigning ticket",
-                "data" => $e->getMessage(),
+                'success' => false,
+                'message' => 'failed assigning ticket',
+                'data' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-
 
     }
 }
