@@ -2,8 +2,6 @@
 
 namespace App\Http\Enums;
 
-use App\Models\Ticket;
-
 enum TicketStatus: string
 {
     case OPEN = 'open';
@@ -13,7 +11,7 @@ enum TicketStatus: string
 
     public function getLabel(): string
     {
-        return match ($this){
+        return match ($this) {
             TicketStatus::OPEN => 'Open',
             TicketStatus::RESOLVED => 'Escalated',
             TicketStatus::CLOSED => 'Closed',
