@@ -48,7 +48,7 @@ const TicketListPage = () => {
                 search: params.search ?? searchKeyword,
                 status: params.status ?? statusFilter,
                 priority: params.priority ?? priorityFilter,
-                sort_by: 'updated_at',
+                sort_by: 'created_at',
                 sort_order: 'desc',
                 page: params.page ?? currentPage,
                 pagination: 10

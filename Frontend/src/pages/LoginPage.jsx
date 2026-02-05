@@ -153,7 +153,7 @@ const LoginPage = () => {
 
                 {/* Footer */}
                 <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 bg-blur">
                         © {new Date().getFullYear()} Ticketing System. All rights reserved.
                     </p>
                 </div>

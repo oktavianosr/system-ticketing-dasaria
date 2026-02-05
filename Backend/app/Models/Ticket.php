@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Enums\TicketStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +23,10 @@ class Ticket extends Model
         'updated_by',
         'completed_at',
         'code',
+    ];
+
+    protected $casts = [
+        'status' => TicketStatus::class
     ];
 
     public function user()

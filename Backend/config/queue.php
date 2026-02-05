@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('QUEUE_CONNECTION', 'database'),
+    'queue_prefix' => env('RABBITMQ_QUEUE_PREFIX', 'default'),
 
     /*
     |--------------------------------------------------------------------------
