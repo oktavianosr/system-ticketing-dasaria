@@ -1,6 +1,7 @@
 # Refactor Notes: JSX to TSX
 
 ## Tanggal Refactor
+
 **6 Februari 2026**
 
 ---
@@ -14,28 +15,30 @@ Refactor lengkap dari React JSX ke TypeScript TSX untuk meningkatkan type safety
 ## Sebelum Refactor (JSX/JavaScript)
 
 ### Karakteristik Kode Lama:
+
 ```javascript
 // ❌ Tidak ada type checking
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [errors, setErrors] = useState({});
-    
-    const handleSubmit = async (e) => {
-        // Type tidak jelas, bisa error saat runtime
-    }
-}
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const handleSubmit = async (e) => {
+    // Type tidak jelas, bisa error saat runtime
+  };
+};
 
 // Import tanpa type safety
-import InputField from '../components/shared/InputField.jsx';
-import { useAuth } from '../hooks/useAuth.js';
+import InputField from "../components/shared/InputField.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 
 // Props tanpa interface
-const Button = ({ children, onClick, variant = 'primary' }) => {
-    // Tidak tahu apa tipe yang seharusnya
-}
+const Button = ({ children, onClick, variant = "primary" }) => {
+  // Tidak tahu apa tipe yang seharusnya
+};
 ```
 
 ### Masalah Utama:
+
 1. **No Type Safety** - Tanpa TypeScript, banyak bug terdeteksi hanya di runtime
 2. **Poor IDE Support** - Autocomplete tidak optimal, susah navigate kode
 3. **Documentation Unclear** - Props dan return type harus ditebak
@@ -47,6 +50,7 @@ const Button = ({ children, onClick, variant = 'primary' }) => {
 ## Sesudah Refactor (TSX/TypeScript)
 
 ### Karakteristik Kode Baru:
+
 ```typescript
 // ✅ Proper type definitions
 interface FormErrors {
@@ -57,7 +61,7 @@ interface FormErrors {
 const LoginPage = (): JSX.Element => {
     const [email, setEmail] = useState<string>('');
     const [errors, setErrors] = useState<FormErrors>({});
-    
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         // Type jelas, compile-time checking
     }
@@ -87,6 +91,7 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ... }) =
 ### Files yang Dikonversi:
 
 #### **Pages** (5 files)
+
 - LoginPage.jsx → LoginPage.tsx ✅
 - TicketListPage.jsx → TicketListPage.tsx ✅
 - TicketCreatePage.jsx → TicketCreatePage.tsx ✅
@@ -94,12 +99,14 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ... }) =
 - ProfilePage.jsx → ProfilePage.tsx ✅
 
 #### **Hooks** (4 files)
+
 - useAuth.js → useAuth.ts ✅
 - useTickets.js → useTickets.ts ✅
 - useSocketNotification.js → useSocketNotification.ts ✅
 - useDebounce.js → useDebounce.ts ✅ (dengan generic type <T>)
 
 #### **Components - Shared** (5 files)
+
 - InputField.jsx → InputField.tsx ✅
 - Button.jsx → Button.tsx ✅
 - Pagination.jsx → Pagination.tsx ✅
@@ -107,10 +114,12 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ... }) =
 - LoadingSpinner.jsx → LoadingSpinner.tsx ✅
 
 #### **Components - Profile** (2 files)
+
 - ProfileHeader.jsx → ProfileHeader.tsx ✅
 - PasswordForm.jsx → PasswordForm.tsx ✅
 
 #### **Components - Tickets** (10 files)
+
 - TicketTable.jsx → TicketTable.tsx ✅
 - TicketRow.jsx → TicketRow.tsx ✅
 - TicketHeader.jsx → TicketHeader.tsx ✅
@@ -124,24 +133,29 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ... }) =
 - AssignDropdown.jsx → AssignDropdown.tsx ✅
 
 #### **Components - Layout** (3 files)
+
 - MainLayout.jsx → MainLayout.tsx ✅
 - ProtectedRoute.jsx → ProtectedRoute.tsx ✅
 - Navbar.jsx → Navbar.tsx ✅
 
 #### **Components - UI** (2 files)
+
 - FormInput.jsx → FormInput.tsx ✅
 - FormSelect.jsx → FormSelect.tsx ✅
 
 #### **Context** (2 files)
+
 - AuthContext.tsx (updated with types) ✅
 - UIContext.tsx (updated with types) ✅
 
 #### **Utils** (3 files)
+
 - validators.js → validators.ts ✅
 - constants.js → constants.ts ✅
 - formatters.js → formatters.ts ✅
 
 #### **Entry Point**
+
 - main.tsx (imports updated) ✅
 
 **Total: 40+ files dikonversi**
@@ -151,6 +165,7 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ... }) =
 ## Key Changes & Patterns
 
 ### 1. **Component Type Definitions**
+
 ```typescript
 // BEFORE
 const InputField = ({ label, type, value, onChange, error, ... }) => { ... }
@@ -171,6 +186,7 @@ const InputField: React.FC<InputFieldProps> = ({ ... }) => { ... }
 ```
 
 ### 2. **Event Handling**
+
 ```typescript
 // BEFORE
 const handleChange = (e) => { ... }
@@ -183,6 +199,7 @@ const handleClick = (e: React.MouseEvent<HTMLButtonElement>): void => { ... }
 ```
 
 ### 3. **State Management**
+
 ```typescript
 // BEFORE
 const [tickets, setTickets] = useState([]);
@@ -199,6 +216,7 @@ const [errors, setErrors] = useState<FormErrors>({});
 ```
 
 ### 4. **Hook Return Types**
+
 ```typescript
 // BEFORE
 export const useAuth = () => {
@@ -218,21 +236,23 @@ export const useAuth = (): AuthContextType => {
 ```
 
 ### 5. **Generic Types untuk Reusable Hooks**
+
 ```typescript
 // BEFORE
 export const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-    return debouncedValue;
-}
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  return debouncedValue;
+};
 
 // AFTER
 export const useDebounce = <T>(value: T, delay: number): T => {
-    const [debouncedValue, setDebouncedValue] = useState<T>(value);
-    return debouncedValue;
-}
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  return debouncedValue;
+};
 ```
 
 ### 6. **Error Handling**
+
 ```typescript
 // BEFORE
 catch (error) {
@@ -241,14 +261,15 @@ catch (error) {
 
 // AFTER
 catch (error: unknown) {
-    const errorMessage = error instanceof Error 
-        ? error.message 
+    const errorMessage = error instanceof Error
+        ? error.message
         : 'Failed to process';
     showAlert(errorMessage, 'error');
 }
 ```
 
 ### 7. **Union & Literal Types**
+
 ```typescript
 // BEFORE
 const variants = {
@@ -265,6 +286,7 @@ const variants: Record<ButtonVariant, string> = { ... }
 ```
 
 ### 8. **Context Types**
+
 ```typescript
 // BEFORE
 const AuthContext = createContext(null);
@@ -272,19 +294,19 @@ export const useAuthContext = () => useContext(AuthContext);
 
 // AFTER
 interface AuthContextType {
-    user: User | null;
-    login: (email: string, password: string) => Promise<LoginResponse>;
-    logout: () => Promise<void>;
-    loading: boolean;
+  user: User | null;
+  login: (email: string, password: string) => Promise<LoginResponse>;
+  logout: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthContext = (): AuthContextType => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error('...');
-    return context;
-}
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("...");
+  return context;
+};
 ```
 
 ---
@@ -294,29 +316,35 @@ export const useAuthContext = (): AuthContextType => {
 ### ✅ Sudah Ditangani
 
 #### 1. **Type Imports**
+
 - Semua imports menggunakan path tanpa `.js`/`.jsx` extension
 - Main.tsx sudah diupdate dengan import bersih
 
 #### 2. **Component Props Validation**
+
 - Setiap component memiliki interface Props yang jelas
 - Optional props ditandai dengan `?`
 - Default values didokumentasikan
 
 #### 3. **Event Type Annotations**
+
 - FormEvent, ChangeEvent, MouseEvent ditipe dengan benar
 - Return types void/Promise<void> sesuai kebutuhan
 
 #### 4. **Generic Types**
+
 - useDebounce menggunakan generic <T>
 - Socket callbacks memiliki type definitions
 - Record<K, V> digunakan untuk object mappings
 
 #### 5. **Error Type Safety**
+
 - Menggunakan `error: unknown` dan type guards
 - Error handling dengan instanceof checks
 - Proper error message fallbacks
 
 #### 6. **Context Type Safety**
+
 - Context dibuat dengan proper typing
 - useContext wrapper dengan error boundaries
 - Return types yang jelas
@@ -326,47 +354,51 @@ export const useAuthContext = (): AuthContextType => {
 ### ⚠️ Hal-Hal yang Perlu Diperhatikan
 
 #### 1. **Migration dari JavaScript API Services**
+
 ```typescript
 // 🔴 ISSUE: API services masih bisa JSX/untyped
 // SOLUTION: Create types/interfaces untuk API responses
 
 // Suggested di api/services/:
 export interface TicketResponse {
-    data: {
-        id: number;
-        title: string;
-        status: TicketStatus;
-        // ...
-    };
-    message: string;
+  data: {
+    id: number;
+    title: string;
+    status: TicketStatus;
+    // ...
+  };
+  message: string;
 }
 ```
 
 #### 2. **Third-Party Library Types**
+
 ```typescript
 // 🔴 ISSUE: Beberapa library bisa tidak memiliki types
 // SOLUTION: Cek @types/package atau install dari DefinitelyTyped
 
 // Contoh yang sudah ada:
-import { useForm, FormProvider } from 'react-hook-form'; // ✅ Has types
-import { Socket } from 'socket.io-client'; // ✅ Has types
+import { useForm, FormProvider } from "react-hook-form"; // ✅ Has types
+import { Socket } from "socket.io-client"; // ✅ Has types
 ```
 
 #### 3. **Dynamic Data dari Backend**
+
 ```typescript
 // 🔴 ISSUE: Data dari API bisa tidak sesuai dengan type definition
 // SOLUTION: Tambahkan validation/transformation layer
 
 // Example:
 interface ApiTicketResponse {
-    id: number;
-    title: string;
-    // Mungkin ada extra field dari backend
-    [key: string]: any; // Fallback untuk extra props
+  id: number;
+  title: string;
+  // Mungkin ada extra field dari backend
+  [key: string]: any; // Fallback untuk extra props
 }
 ```
 
 #### 4. **Import Cycles**
+
 ```typescript
 // 🔴 POTENTIAL ISSUE: Circular imports saat import types
 // SOLUTION: Pisahkan types ke file terpisah jika diperlukan
@@ -377,6 +409,7 @@ interface ApiTicketResponse {
 ```
 
 #### 5. **React Forward Refs**
+
 ```typescript
 // ⚠️ Components dengan forwardRef perlu typing khusus:
 const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
@@ -388,14 +421,15 @@ FormInput.displayName = 'FormInput';
 ```
 
 #### 6. **Union Types & Discriminated Unions**
+
 ```typescript
 // Current approach berfungsi tapi bisa dioptimalkan:
-type AlertType = 'success' | 'error' | 'warning' | 'info';
+type AlertType = "success" | "error" | "warning" | "info";
 
 // Better dengan discriminated union jika logika kompleks:
-type Alert = 
-    | { type: 'success'; duration: number }
-    | { type: 'error'; retry: boolean }
+type Alert =
+  | { type: "success"; duration: number }
+  | { type: "error"; retry: boolean };
 ```
 
 ---
@@ -403,25 +437,27 @@ type Alert =
 ## Testing Considerations
 
 ### Unit Tests
+
 ```typescript
 // Pastikan jest.mock() dan vitest mock() kompatibel dengan types
 
 // Example test setup yang direkomendasikan:
-import { render, screen } from '@testing-library/react';
-import { ReactElement } from 'react';
+import { render, screen } from "@testing-library/react";
+import { ReactElement } from "react";
 
 const renderComponent = (component: ReactElement) => {
-    return render(component);
-}
+  return render(component);
+};
 ```
 
 ### Type Testing
+
 ```typescript
 // TypeScript dapat memvalidasi type compatibility
 // Gunakan type-only imports untuk test types
 
 // Example:
-import type { ButtonProps } from './Button';
+import type { ButtonProps } from "./Button";
 ```
 
 ---
@@ -429,15 +465,18 @@ import type { ButtonProps } from './Button';
 ## Performance Impact
 
 ### ✅ Positif:
+
 - **Better Tree Shaking**: TypeScript compiler dapat better analyze dead code
 - **IDE Optimization**: Better caching dengan type information
 - **Bundle Size**: Minified TypeScript biasanya sama dengan minified JavaScript
 
 ### ⚠️ Build Time:
+
 - Kompilasi TypeScript menambah ~2-5 detik ke build time
 - Dev server restart lebih lambat (offset dengan better DX)
 
 ### Recommendation:
+
 ```bash
 # Gunakan esbuild atau SWC untuk faster compilation
 # Dalam vite.config.js, pastikan menggunakan:
@@ -467,34 +506,39 @@ Saat menambah fitur baru, pastikan:
 ## Common TypeScript Patterns Used
 
 ### 1. Record Type untuk Mappings
+
 ```typescript
 const colorMap: Record<Status, string> = {
-    open: 'bg-green-100',
-    closed: 'bg-gray-100'
-}
+  open: "bg-green-100",
+  closed: "bg-gray-100",
+};
 ```
 
 ### 2. Omit & Pick untuk Props Extension
+
 ```typescript
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
+  variant?: ButtonVariant;
 }
 ```
 
 ### 3. Optional Chaining & Nullish Coalescing
+
 ```typescript
-ticket.user?.name ?? 'Unknown'
-agents?.map(agent => agent.name)
+ticket.user?.name ?? "Unknown";
+agents?.map((agent) => agent.name);
 ```
 
 ### 4. Type Guards
+
 ```typescript
 if (error instanceof Error) {
-    return error.message;
+  return error.message;
 }
 ```
 
 ### 5. Utility Types
+
 ```typescript
 type StatusColor = Record<string, string>;
 type Response<T> = { data: T; message: string };
@@ -505,6 +549,7 @@ type Response<T> = { data: T; message: string };
 ## Tools & Configuration
 
 ### Current Setup:
+
 ```json
 {
   "compilerOptions": {
@@ -520,6 +565,7 @@ type Response<T> = { data: T; message: string };
 ```
 
 ### IDE Configuration:
+
 ```bash
 # Pastikan menggunakan TypeScript version yang sama
 # Di VS Code: Command Palette → Select TypeScript Version → Use Workspace Version
@@ -530,19 +576,25 @@ type Response<T> = { data: T; message: string };
 ## Recommendations untuk Kedepannya
 
 ### 1. **Strict Mode**
+
 Pertimbangkan mengaktifkan `"strict": true` jika belum di tsconfig.json
 
 ### 2. **Type Definitions**
+
 Pisahkan types ke folder `types/` atau `@types/` untuk reusability
 
 ### 3. **API Layer**
+
 Buat comprehensive type definitions untuk semua API endpoints
 
 ### 4. **Testing**
+
 Tambahkan type-safe test utilities dengan proper TypeScript support
 
 ### 5. **Documentation**
+
 Gunakan TSDoc comments untuk dokumentasi yang lebih baik:
+
 ```typescript
 /**
  * Fetches tickets from the server
@@ -554,6 +606,7 @@ function fetchTickets(options: FilterOptions): Promise<Ticket[]> { ... }
 ```
 
 ### 6. **Validation Schema**
+
 Pertimbangkan `zod` atau `yup` untuk runtime validation
 
 ---
@@ -561,6 +614,7 @@ Pertimbangkan `zod` atau `yup` untuk runtime validation
 ## Files yang Masih Belum Dikonversi (Optional)
 
 Jika ada file JSX/JS yang tersisa:
+
 - API service files - Rekomendasikan untuk di-type dengan interface definitions
 - Configuration files - Biarkan jika sudah berfungsi
 - Build utilities - Bisa tetap JavaScript untuk fleksibilitas
@@ -570,6 +624,7 @@ Jika ada file JSX/JS yang tersisa:
 ## Kesimpulan
 
 ✅ **Refactor berhasil 100%** dengan:
+
 - 40+ file dikonversi ke TypeScript
 - Proper type annotations di semua components
 - Type-safe hooks dan context
@@ -577,6 +632,7 @@ Jika ada file JSX/JS yang tersisa:
 - Error handling yang robust
 
 🎯 **Benefits yang didapat:**
+
 - Better IDE support dan autocomplete
 - Compile-time error catching
 - Improved maintainability
@@ -584,6 +640,7 @@ Jika ada file JSX/JS yang tersisa:
 - Reduced runtime bugs
 
 ⚠️ **Action Items:**
+
 1. Type API service responses
 2. Add more specific error types
 3. Consider adding test files
