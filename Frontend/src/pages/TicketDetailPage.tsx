@@ -12,44 +12,84 @@ import { useUIContext } from '../context/UIContext';
 import { useAuth } from '../hooks/useAuth';
 import { useSocketNotifications } from '../hooks/useSocketNotification';
 
-const TicketDetailPage = () => {
-    const { id } = useParams();
+interface Agent {
+    id: string | number;
+    name: string;
+}
+
+interface User {
+    id?: string | number;
+    name: string;
+    email: string;
+    role?: string;
+}
+
+interface Comment {
+    id: string | number;
+    user?: User;
+    creator?: User;
+    author?: string;
+    body?: string;
+    text?: string;
+    created_at?: string;
+    date?: string;
+}
+
+interface Ticket {
+    id: string | number;
+    code: string;
+    title: string;
+    subject?: string;
+    status: string;
+    priority: string;
+    description: string;
+    created_at: string;
+    user?: User;
+    assigned_to?: Agent;
+    assigned_id?: string | number;
+    comments?: Comment[];
+}
+
+const TicketDetailPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { showAlert } = useUIContext();
     const { user } = useAuth();
 
-    const [ticket, setTicket] = useState(null);
-    const [agents, setAgents] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [submittingComment, setSubmittingComment] = useState(false);
-    const [updatingStatus, setUpdatingStatus] = useState(false);
-    const [assigningAgent, setAssigningAgent] = useState(false);
+    const [ticket, setTicket] = useState<Ticket | null>(null);
+    const [agents, setAgents] = useState<Agent[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [initialLoading, setInitialLoading] = useState<boolean>(true);
+    const [submittingComment, setSubmittingComment] = useState<boolean>(false);
+    const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
+    const [assigningAgent, setAssigningAgent] = useState<boolean>(false);
 
     const isAdminOrAgent = user?.role === 'admin' || user?.role === 'agent';
 
-    const fetchTicket = useCallback(async (isInitial = false) => {
+    const fetchTicket = useCallback(async (isInitial = false): Promise<void> => {
         if (isInitial) setInitialLoading(true);
         else setLoading(true);
 
         try {
             const response = await ticketService.getById(id);
             setTicket(response.data || response);
-        } catch (error) {
-            showAlert(error.message || 'Failed to load ticket', 'error');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to load ticket';
+            showAlert(errorMessage, 'error');
         } finally {
             setInitialLoading(false);
             setLoading(false);
         }
     }, [id, showAlert]);
 
-    const fetchAgents = useCallback(async () => {
+    const fetchAgents = useCallback(async (): Promise<void> => {
         if (!isAdminOrAgent) return;
         try {
             const response = await userService.getAgents();
             setAgents(response.data || response || []);
-        } catch (error) {
-            showAlert(error.message || 'Failed to load agents', 'error');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to load agents';
+            showAlert(errorMessage, 'error');
         }
     }, [isAdminOrAgent, showAlert]);
 
@@ -58,52 +98,55 @@ const TicketDetailPage = () => {
         fetchAgents();
     }, [fetchTicket, fetchAgents]);
 
-    const handleStatusUpdate = async (newStatus) => {
+    const handleStatusUpdate = async (newStatus: string): Promise<void> => {
         setUpdatingStatus(true);
         try {
-            await ticketService.update(id, { status: newStatus.value });
+            await ticketService.update(id, { status: newStatus });
             showAlert('Status updated successfully', 'success');
             fetchTicket();
-        } catch (error) {
-            showAlert(error.message || 'Failed to update status', 'error');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to update status';
+            showAlert(errorMessage, 'error');
         } finally {
             setUpdatingStatus(false);
         }
     };
 
-    const handleAssigneeUpdate = async (agentId) => {
+    const handleAssigneeUpdate = async (agentId: string): Promise<void> => {
         if (!agentId) return;
         setAssigningAgent(true);
         try {
             await ticketService.assignTicket(id, agentId);
             showAlert('Ticket assigned successfully', 'success');
             fetchTicket();
-        } catch (error) {
-            showAlert(error.message || 'Failed to assign ticket', 'error');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to assign ticket';
+            showAlert(errorMessage, 'error');
         } finally {
             setAssigningAgent(false);
         }
     };
 
-    const handleCommentSubmit = async (commentText) => {
+    const handleCommentSubmit = async (commentText: string): Promise<void> => {
         if (!commentText.trim()) return;
         setSubmittingComment(true);
         try {
             await ticketService.addComment(id, commentText);
             showAlert('Comment added', 'success');
             fetchTicket();
-        } catch (error) {
-            showAlert(error.message || 'Failed to add comment', 'error');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to add comment';
+            showAlert(errorMessage, 'error');
         } finally {
             setSubmittingComment(false);
         }
     };
 
-
     const socketCallbacks = useMemo(() => ({
-        onCommentCreated: (data) => {
-            if (data.ticket_id === parseInt(id)) {
+        onCommentCreated: (data: any) => {
+            if (data.ticket_id === parseInt(id!)) {
                 setTicket(prev => {
+                    if (!prev) return prev;
                     // Prevent duplicate comments if we already fetched/added it
                     const exists = prev.comments?.some(c => c.id === data.id);
                     if (exists) return prev;
@@ -120,9 +163,9 @@ const TicketDetailPage = () => {
                 }
             }
         },
-        onStatusChanged: (data) => {
-            if (data.ticket_id === parseInt(id)) {
-                setTicket(prev => ({ ...prev, status: data.status }));
+        onStatusChanged: (data: any) => {
+            if (data.ticket_id === parseInt(id!)) {
+                setTicket(prev => prev ? { ...prev, status: data.status } : null);
                 showAlert(`Ticket status changed to ${data.status}`, 'info');
             }
         }
@@ -177,8 +220,8 @@ const TicketDetailPage = () => {
                     <TicketInfo
                         ticket={ticket}
                         agents={agents}
-                        onStatusUpdate={isAdminOrAgent ? handleStatusUpdate : null}
-                        onAssigneeUpdate={isAdminOrAgent ? handleAssigneeUpdate : null}
+                        onStatusUpdate={isAdminOrAgent ? handleStatusUpdate : undefined}
+                        onAssigneeUpdate={isAdminOrAgent ? handleAssigneeUpdate : undefined}
                         updatingStatus={updatingStatus}
                         assigningAgent={assigningAgent}
                     />

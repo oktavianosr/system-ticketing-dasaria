@@ -112,7 +112,7 @@ class TicketController extends Controller
         }
     }
 
-    public function update(UpdateTicketRequest $request, $id)
+    public function updateStatus(UpdateTicketRequest $request, $id)
     {
         $data = $request->validated();
 
@@ -157,7 +157,7 @@ class TicketController extends Controller
         }
 
         try {
-            $ticket = $this->ticketService->updateTicket($ticket, $data);
+            $ticket = $this->ticketService->updateStatus($ticket, $request->status);
 
             return response()->json([
                 'success' => true,
@@ -170,7 +170,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'failed updating ticket',
-                'data' => $e->getMessage(),
+                'data' => \Log::info($e->getMessage() .''. $e->getLine()),
             ], $status);
         }
     }

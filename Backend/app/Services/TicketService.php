@@ -61,11 +61,11 @@ class TicketService
         }
     }
 
-    public function updateTicket($ticket, array $data)
+    public function updateStatus($ticket, string $data)
     {
         DB::beginTransaction();
         try {
-            $updatedTicket = $this->ticketRepository->update($ticket, $data);
+            $updatedTicket = $this->ticketRepository->updateTicketStatus($ticket, $data);
             DB::commit();
 
             return $updatedTicket;

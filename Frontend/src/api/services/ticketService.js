@@ -14,7 +14,7 @@ export const ticketService = {
         return response.data;
     },
     update: async (id, ticketData) => {
-        const response = await axiosInstance.put(`/tickets/${id}`, ticketData);
+        const response = await axiosInstance.post(`/tickets/${id}`, ticketData);
         return response.data;
     },
     delete: async (id) => {

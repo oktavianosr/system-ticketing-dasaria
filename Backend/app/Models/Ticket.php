@@ -25,9 +25,13 @@ class Ticket extends Model
         'code',
     ];
 
-    protected $casts = [
-        'status' => TicketStatus::class
-    ];
+    protected function casts()
+    {
+        return [
+            'completed_at' => 'datetime',
+            'status' => TicketStatus::class,
+        ];
+    }
 
     public function user()
     {

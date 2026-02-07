@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Http\Enums\TicketStatus;
 use App\Models\Ticket;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -90,12 +91,17 @@ class TicketRepository extends BaseRepository
         return $ticket->comments()->create($data);
     }
 
-    public function updateTicketStatus($ticket, $status)
+    public function updateTicketStatus($ticket,string $data)
     {
-        $ticket->status = $status;
-        if ($status == TicketStatus::RESOLVED) {
+        if ($ticket->completed_at !== null){
+            throw new Exception('Ticket has already been closed', 403);
+        }
+
+        $ticket->status = $data;
+        if ($data === TicketStatus::CLOSED->value) {
             $ticket->completed_at = now();
         }
+
         $ticket->save();
 
         return $ticket;
